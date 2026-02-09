@@ -1,4 +1,4 @@
-# inactu-agent-kit
+# provenact-agent-kit
 
 [![Status](https://img.shields.io/badge/stability-0.x--alpha-orange)](./ARCHITECTURE.md)
 
@@ -8,7 +8,7 @@ This repository is intentionally not an agent framework.
 
 ## Description
 
-`inactu-agent-kit` provides lightweight Rust adapters for verify/execute/receipt
+`provenact-agent-kit` provides lightweight Rust adapters for verify/execute/receipt
 execution flows powered by `inactu-sdk`.
 
 ## Tags

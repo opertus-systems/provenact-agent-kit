@@ -3,11 +3,11 @@ name = "inactu-agent-kit"
 version = "0.1.0-alpha.1"
 edition = "2024"
 license = "Apache-2.0"
-description = "Thin agent-facing adapters for Inactu SDK execution flows"
-repository = "https://github.com/inactu/inactu-agent-kit"
+description = "Thin agent-facing adapters for Provenact SDK execution flows"
+repository = "https://github.com/opertus-systems/provenact-agent-kit"
 
 [dependencies]
-inactu-sdk = { path = "../inactu-sdk" }
+inactu-sdk = { path = "../provenact-sdk" }
 
 [dev-dependencies]
 tempfile = "3"
