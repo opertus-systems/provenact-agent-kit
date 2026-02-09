@@ -16,7 +16,8 @@ fn verify_run_parse_against_skills_repo_smoke() {
         return;
     };
 
-    let cli_bin = discover_or_build_provenact_cli(&provenact_root).expect("discover/build provenact-cli");
+    let cli_bin =
+        discover_or_build_provenact_cli(&provenact_root).expect("discover/build provenact-cli");
     let adapter = ProvenactExecutionAdapter::with_runner(CliRunner::new(cli_bin));
 
     let fixture = skills_root.join("skills/echo.minimal/0.1.1");
@@ -102,15 +103,7 @@ fn discover_skills_root() -> Result<PathBuf, String> {
     if fallback.is_dir() {
         return Ok(fallback);
     }
-    let legacy = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .ok_or_else(|| "workspace parent not found".to_string())?
-        .join("provenact-skills");
-    if legacy.is_dir() {
-        Ok(legacy)
-    } else {
-        Err("PROVENACT_SKILLS_ROOT not set and sibling ../provenact-skills (or legacy ../provenact-skills) not found".to_string())
-    }
+    Err("PROVENACT_SKILLS_ROOT not set and sibling ../provenact-skills not found".to_string())
 }
 
 fn discover_or_build_provenact_cli(root: &Path) -> Result<PathBuf, String> {
@@ -122,10 +115,6 @@ fn discover_or_build_provenact_cli(root: &Path) -> Result<PathBuf, String> {
     if candidate.is_file() {
         return Ok(candidate);
     }
-    let legacy = root.join("target/debug/provenact-cli");
-    if legacy.is_file() {
-        return Ok(legacy);
-    }
 
     let output = Command::new("cargo")
         .arg("build")
@@ -136,21 +125,10 @@ fn discover_or_build_provenact_cli(root: &Path) -> Result<PathBuf, String> {
         .map_err(|e| format!("failed to invoke cargo build for provenact-cli: {e}"))?;
 
     if !output.status.success() {
-        let legacy_output = Command::new("cargo")
-            .arg("build")
-            .arg("-p")
-            .arg("provenact-cli")
-            .current_dir(root)
-            .output()
-            .map_err(|e| format!("failed to invoke cargo build for provenact-cli: {e}"))?;
-        if !legacy_output.status.success() {
-            return Err(format!(
-                "building provenact-cli and provenact-cli failed: {}; {}",
-                String::from_utf8_lossy(&output.stderr),
-                String::from_utf8_lossy(&legacy_output.stderr)
-            ));
-        }
-        return Ok(legacy);
+        return Err(format!(
+            "building provenact-cli failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
     }
     Ok(candidate)
 }
