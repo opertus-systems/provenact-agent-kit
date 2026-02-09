@@ -7,7 +7,7 @@ description = "Thin agent-facing adapters for Inactu SDK execution flows"
 repository = "https://github.com/inactu/inactu-agent-kit"
 
 [dependencies]
-inactu-sdk = { package = "provenact-sdk", path = "../inactu-sdk" }
+inactu-sdk = { path = "../inactu-sdk" }
 
 [dev-dependencies]
 tempfile = "3"

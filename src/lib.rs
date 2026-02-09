@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use inactu_sdk::{CliRunner, ExecuteRequest, ProvenactSdk, Receipt, SdkError, VerifyRequest};
+use inactu_sdk::{CliRunner, ExecuteRequest, InactuSdk, Receipt, SdkError, VerifyRequest};
 
 pub type Result<T> = std::result::Result<T, SdkError>;
 
@@ -26,13 +26,13 @@ pub struct AgentExecutionOutput {
 
 #[derive(Debug, Clone)]
 pub struct InactuExecutionAdapter<R = CliRunner> {
-    sdk: ProvenactSdk<R>,
+    sdk: InactuSdk<R>,
 }
 
 impl Default for InactuExecutionAdapter<CliRunner> {
     fn default() -> Self {
         Self {
-            sdk: ProvenactSdk::default(),
+            sdk: InactuSdk::default(),
         }
     }
 }
@@ -43,7 +43,7 @@ where
 {
     pub fn with_runner(runner: R) -> Self {
         Self {
-            sdk: ProvenactSdk::with_runner(runner),
+            sdk: InactuSdk::with_runner(runner),
         }
     }
 
