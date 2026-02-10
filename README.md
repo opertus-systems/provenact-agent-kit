@@ -47,6 +47,9 @@ let out = adapter.verify_execute_parse(AgentExecutionRequest {
     receipt: "./receipt.json".into(),
     require_cosign: false,
     oci_ref: None,
+    cosign_key: None,
+    cosign_cert_identity: None,
+    cosign_cert_oidc_issuer: None,
     allow_experimental: false,
 })?;
 
@@ -63,11 +66,11 @@ println!("{}", out.receipt.raw["artifact"]);
 ## Local Conformance Smoke
 
 ```bash
-PROVENACT_VECTOR_ROOT=../provenact \
+PROVENACT_VECTOR_ROOT=../provenact-cli \
 PROVENACT_SKILLS_ROOT=../provenact-skills \
-PROVENACT_CLI_BIN=../provenact/target/debug/provenact-cli \
+PROVENACT_CLI_BIN=../provenact-cli/target/debug/provenact-cli \
 cargo test --test conformance_smoke -- --nocapture
 ```
 
 If `PROVENACT_CLI_BIN` is not set, the test attempts to build `provenact-cli` from
-`PROVENACT_VECTOR_ROOT` (or from sibling `../provenact`).
+`PROVENACT_VECTOR_ROOT` (or from sibling `../provenact-cli`).

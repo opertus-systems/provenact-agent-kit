@@ -10,4 +10,5 @@ repository = "https://github.com/opertus-systems/provenact-agent-kit"
 provenact-sdk = { path = "../provenact-sdk" }
 
 [dev-dependencies]
+sha2 = "0.10"
 tempfile = "3"
