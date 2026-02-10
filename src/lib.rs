@@ -14,6 +14,9 @@ pub struct AgentExecutionRequest {
     pub receipt: PathBuf,
     pub require_cosign: bool,
     pub oci_ref: Option<String>,
+    pub cosign_key: Option<PathBuf>,
+    pub cosign_cert_identity: Option<String>,
+    pub cosign_cert_oidc_issuer: Option<String>,
     pub allow_experimental: bool,
 }
 
@@ -54,6 +57,9 @@ where
             keys_digest: req.keys_digest.clone(),
             require_cosign: req.require_cosign,
             oci_ref: req.oci_ref.clone(),
+            cosign_key: req.cosign_key.clone(),
+            cosign_cert_identity: req.cosign_cert_identity.clone(),
+            cosign_cert_oidc_issuer: req.cosign_cert_oidc_issuer.clone(),
             allow_experimental: req.allow_experimental,
         })?;
 
@@ -66,6 +72,9 @@ where
             receipt: req.receipt,
             require_cosign: req.require_cosign,
             oci_ref: req.oci_ref,
+            cosign_key: req.cosign_key,
+            cosign_cert_identity: req.cosign_cert_identity,
+            cosign_cert_oidc_issuer: req.cosign_cert_oidc_issuer,
             allow_experimental: req.allow_experimental,
         })?;
 
@@ -129,6 +138,9 @@ mod tests {
                 receipt: receipt_path,
                 require_cosign: false,
                 oci_ref: None,
+                cosign_key: None,
+                cosign_cert_identity: None,
+                cosign_cert_oidc_issuer: None,
                 allow_experimental: false,
             })
             .expect("adapter ok");

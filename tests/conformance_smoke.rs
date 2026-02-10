@@ -3,6 +3,7 @@ use std::process::Command;
 
 use provenact_agent_kit::{AgentExecutionRequest, ProvenactExecutionAdapter};
 use provenact_sdk::CliRunner;
+use sha2::Digest as _;
 
 #[test]
 fn verify_run_parse_against_skills_repo_smoke() {
@@ -15,12 +16,14 @@ fn verify_run_parse_against_skills_repo_smoke() {
         return;
     };
 
-    let cli_bin = discover_or_build_provenact_cli(&provenact_root).expect("discover/build provenact-cli");
+    let cli_bin =
+        discover_or_build_provenact_cli(&provenact_root).expect("discover/build provenact-cli");
     let adapter = ProvenactExecutionAdapter::with_runner(CliRunner::new(cli_bin));
 
     let fixture = skills_root.join("skills/echo.minimal/0.1.1");
     let bundle = fixture;
     let keys = bundle.join("public-keys.json");
+    let keys_digest = sha256_file(&keys).expect("keys digest should compute");
 
     let temp = tempfile::tempdir().expect("temp dir");
     let policy = temp.path().join("policy.json");
@@ -45,12 +48,15 @@ fn verify_run_parse_against_skills_repo_smoke() {
         .verify_execute_parse(AgentExecutionRequest {
             bundle,
             keys,
-            keys_digest: None,
+            keys_digest: Some(keys_digest),
             policy,
             input,
             receipt: receipt.clone(),
             require_cosign: false,
             oci_ref: None,
+            cosign_key: None,
+            cosign_cert_identity: None,
+            cosign_cert_oidc_issuer: None,
             allow_experimental: false,
         })
         .expect("verify+run+parse should pass");
@@ -71,11 +77,11 @@ fn discover_provenact_root() -> Result<PathBuf, String> {
     let fallback = Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .ok_or_else(|| "workspace parent not found".to_string())?
-        .join("provenact");
+        .join("provenact-cli");
     if fallback.is_dir() {
         Ok(fallback)
     } else {
-        Err("PROVENACT_VECTOR_ROOT not set and sibling ../provenact not found".to_string())
+        Err("PROVENACT_VECTOR_ROOT not set and sibling ../provenact-cli not found".to_string())
     }
 }
 
@@ -119,4 +125,10 @@ fn discover_or_build_provenact_cli(root: &Path) -> Result<PathBuf, String> {
         ));
     }
     Ok(candidate)
+}
+
+fn sha256_file(path: &Path) -> Result<String, String> {
+    let bytes =
+        std::fs::read(path).map_err(|e| format!("failed to read {}: {e}", path.display()))?;
+    Ok(format!("sha256:{:x}", sha2::Sha256::digest(bytes)))
 }
