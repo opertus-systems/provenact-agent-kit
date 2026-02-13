@@ -149,4 +149,35 @@ mod tests {
         assert!(out.execute_stdout.contains("OK run"));
         assert_eq!(out.receipt.raw["schema_version"], "1.0.0");
     }
+
+    #[test]
+    fn adapter_rejects_empty_bundle_path() {
+        let runner = FakeRunner::default();
+        let adapter = ProvenactExecutionAdapter::with_runner(runner);
+        let dir = tempfile::tempdir().expect("tmp");
+        let receipt_path = dir.path().join("receipt.json");
+        std::fs::write(&receipt_path, r#"{"schema_version":"1.0.0"}"#).expect("write");
+
+        let err = adapter
+            .verify_execute_parse(AgentExecutionRequest {
+                bundle: PathBuf::new(),
+                keys: PathBuf::from("./keys.json"),
+                keys_digest: Some(
+                    "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                        .to_string(),
+                ),
+                policy: PathBuf::from("./policy.json"),
+                input: PathBuf::from("./input.json"),
+                receipt: receipt_path,
+                require_cosign: false,
+                oci_ref: None,
+                cosign_key: None,
+                cosign_cert_identity: None,
+                cosign_cert_oidc_issuer: None,
+                allow_experimental: false,
+            })
+            .expect_err("adapter should reject empty bundle path");
+
+        assert!(matches!(err, SdkError::InvalidRequest(_)));
+    }
 }
