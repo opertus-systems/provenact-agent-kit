@@ -4,26 +4,32 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - name: Checkout provenact-sdk
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: opertus-systems/provenact-sdk
           path: provenact-sdk
+
+      - name: Enforce pinned GitHub Actions
+        run: ./scripts/check-pinned-actions.sh
 
       - name: Link provenact-sdk sibling path
         run: ln -s "$GITHUB_WORKSPACE/provenact-sdk" "$GITHUB_WORKSPACE/../provenact-sdk"
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
 
       - name: Rust cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@ad397744b0d591a723ab90405b7247fac0e6b8db
 
       - name: Format
         run: cargo fmt --all -- --check

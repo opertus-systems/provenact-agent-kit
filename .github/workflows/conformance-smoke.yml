@@ -12,12 +12,15 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Agent Kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Resolve provenact repositories
         id: repos
@@ -36,22 +39,25 @@ jobs:
           fi
 
       - name: Checkout Provenact substrate
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: ${{ steps.repos.outputs.provenact_repo }}
           path: provenact
 
       - name: Checkout Provenact skills
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           repository: ${{ steps.repos.outputs.provenact_skills_repo }}
           path: provenact-skills
 
+      - name: Enforce pinned GitHub Actions
+        run: ./scripts/check-pinned-actions.sh
+
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7
 
       - name: Rust cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@ad397744b0d591a723ab90405b7247fac0e6b8db
 
       - name: Build provenact-cli
         working-directory: provenact
